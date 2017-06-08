@@ -58,20 +58,23 @@ trap
 try
 {
     $NewDIR = "C:\SoftwaresDump"
-    $SoftwareWebLink = "http://artifacts.g7crm4l.org/softwares/Microsoft%20Softwares/BuildTools_Full 2015.exe"
-    $SoftwarePath = "C:\SoftwaresDump\BuildTools_Full 2015.exe"
+    $SoftwareWebLink = "https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=15#/vs_buildtools__1231979381.1490945123"
+    $SoftwarePath = "C:\SoftwaresDump\vs_buildtools__667437884.1496052054.exe"
 
     Write-Output 'Preparing temp directory ...'
-    New-Item "C:\SoftwaresDump\BuildTools_Full 2015.exe" -ItemType Directory -Force | Out-Null
+    New-Item "C:\SoftwaresDump\vs_buildtools__667437884.1496052054.exe" -ItemType Directory -Force | Out-Null
 
     Write-Output 'Downloading pre-requisite files ...'
     (New-Object System.Net.WebClient).DownloadFile("$SoftwareWebLink", "$SoftwarePath")
    
 
  Write-Output 'Installing ...'
-Start-Process "C:\SoftwaresDump\BuildTools_Full 2015.exe" -ArgumentList '/s' -Wait    
+Start-Process "C:\SoftwaresDump\vs_buildtools__667437884.1496052054.exe" -ArgumentList '/s' -Wait    
 
     Write-Output 'Done!'
+
+
+
 }
 finally
 {
