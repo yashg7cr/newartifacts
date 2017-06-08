@@ -1,51 +1,81 @@
-﻿Function Get-TempPassword()
+[CmdletBinding()]
+param(
+)
+
+###################################################################################################
+
+#
+# PowerShell configurations
+#
+
+# NOTE: Because the $ErrorActionPreference is "Stop", this script will stop on first failure.
+#       This is necessary to ensure we capture errors inside the try-catch-finally block.
+$ErrorActionPreference = "Stop"
+
+# Ensure we set the working directory to that of the script.
+pushd $PSScriptRoot
+
+###################################################################################################
+
+#
+# Functions used in this script.
+#
+
+function Handle-LastError
 {
-    Param(
-        [int] $length=10,
-        [string[]] $sourcedata
-    )
-
-    For ($loop=1; $loop –le $length; $loop++) 
+    $message = $error[0].Exception.Message
+    if ($message)
     {
-        $tempPassword+=($sourcedata | GET-RANDOM)
+        Write-Host -Object "ERROR: $message" -ForegroundColor Red
     }
-
-    return $tempPassword
+    
+    # IMPORTANT NOTE: Throwing a terminating error (using $ErrorActionPreference = "Stop") still
+    # returns exit code zero from the PowerShell script when using -File. The workaround is to
+    # NOT use -File when calling this script and leverage the try-catch-finally block and return
+    # a non-zero exit code from the catch block.
+    exit -1
 }
 
-$ascii=$NULL;For ($a=33;$a –le 126;$a++) {$ascii+=,[char][byte]$a }
+###################################################################################################
 
-$userName = "artifactInstaller"
-$password = Get-TempPassword –length 43 –sourcedata $ascii
+#
+# Handle all errors in this script.
+#
 
-$cn = [ADSI]"WinNT://$env:ComputerName"
+trap
+{
+    # NOTE: This trap will handle all errors. There should be no need to use a catch below in this
+    #       script, unless you want to ignore a specific error.
+    Handle-LastError
+}
 
-# Create user
-$user = $cn.Create("User", $userName)
-$user.SetPassword($password)
-$user.SetInfo()
-$user.description = "DevTestLab artifact installer"
-$user.SetInfo()
+###################################################################################################
 
-# Add user to the Administrators group
-$group = [ADSI]"WinNT://$env:ComputerName/Administrators,group"
-$group.add("WinNT://$env:ComputerName/$userName")
+#
+# Main execution block.
+#
 
-$secPassword = ConvertTo-SecureString $password -AsPlainText -Force
-$credential = New-Object System.Management.Automation.PSCredential("$env:COMPUTERNAME\$($username)", $secPassword)
+try
+{
+    $NewDIR = "C:\SoftwaresDump\xamarin"
+    $SoftwareWebLink = "http://artifacts.g7crm4l.org/softwares/Microsoft%20Softwares/Xamarin.VisualStudio_4.0.1.96.msi"
+    $SoftwarePath = "C:\SoftwaresDump\xamarin\Xamarin.VisualStudio_4.0.1.96.msi"
 
-$command = $PSScriptRoot + "\SetupOffice365.ps1"
+    Write-Output 'Preparing temp directory ...'
+    New-Item "C:\SoftwaresDump\xamarin\" -ItemType Directory -Force | Out-Null
 
-# Run Office365 install as the artifactInstaller user
-Enable-PSRemoting –Force -SkipNetworkProfileCheck
+    Write-Output 'Downloading pre-requisite files ...'
+    (New-Object System.Net.WebClient).DownloadFile("$SoftwareWebLink", "$SoftwarePath")
+   
 
-# Ensure that current process can run scripts. 
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force 
+ Write-Output 'Installing ...'
+Start-Process "C:\SoftwaresDump\xamarin\Xamarin.VisualStudio_4.0.1.96.msi" -ArgumentList '/q' -Wait 
 
-Invoke-Command -FilePath $command -Credential $credential -ComputerName $env:COMPUTERNAME
+    
 
-# Delete the artifactInstaller user
-$cn.Delete("User", $userName)
-
-# Delete the artifactInstaller user profile
-gwmi win32_userprofile | where { $_.LocalPath -like "*$userName*" } | foreach { $_.Delete() }
+    Write-Output 'Done!'
+}
+finally
+{
+    popd
+}
