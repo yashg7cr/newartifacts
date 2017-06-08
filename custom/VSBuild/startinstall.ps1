@@ -58,8 +58,8 @@ trap
 try
 {
     $NewDIR = "C:\SoftwaresDump"
-    $SoftwareWebLink = "http://artifacts.g7crm4l.org/softwares/Microsoft%20Softwares/BuildTools_Full%202015.exe"
-    $SoftwarePath = "C:\SoftwaresDump\BuildTools_Full%202015.exe"
+    $SoftwareWebLink = "http://artifacts.g7crm4l.org/softwares/Microsoft%20Softwares/BuildTools_Full 202015.exe"
+    $SoftwarePath = "C:\SoftwaresDump\BuildTools_Full 202015.exe"
 
     Write-Output 'Preparing temp directory ...'
     New-Item "C:\SoftwaresDump\BuildTools_Full 202015.exe" -ItemType Directory -Force | Out-Null
