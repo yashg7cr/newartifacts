@@ -69,7 +69,7 @@ try
    
 
  Write-Output 'Installing ...'
-Start-Process "C:\SoftwaresDump\BuildTools_Full%202015.exe" -ArgumentList '/q' -Wait 
+Start-Process "C:\SoftwaresDump\BuildTools_Full%202015.exe" -ArgumentList '/s' -Wait 
 
     
 
