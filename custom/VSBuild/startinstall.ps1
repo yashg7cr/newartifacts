@@ -72,7 +72,7 @@ Write-Output 'Downloading pre-requisite files ...'
 
 Write-Output 'Installing ...'
 Start-Process "C:\SoftwaresDump\buildtools_full.exe" '/q' -Wait 
-
+Write-Output 'Done!'
 
 
 
