@@ -62,16 +62,14 @@ try
     $SoftwarePath = "C:\SoftwaresDump\BuildTools_Full%202015.exe"
 
     Write-Output 'Preparing temp directory ...'
-    New-Item "C:\SoftwaresDump\BuildTools_Full%202015.exe" -ItemType Directory -Force | Out-Null
+    New-Item "C:\SoftwaresDump\BuildTools_Full 202015.exe" -ItemType Directory -Force | Out-Null
 
     Write-Output 'Downloading pre-requisite files ...'
     (New-Object System.Net.WebClient).DownloadFile("$SoftwareWebLink", "$SoftwarePath")
    
 
  Write-Output 'Installing ...'
-Start-Process "C:\SoftwaresDump\BuildTools_Full%202015.exe" -ArgumentList '/s' -Wait 
-
-    
+Start-Process "C:\SoftwaresDump\BuildTools_Full 202015.exe" -ArgumentList '/s' -Wait    
 
     Write-Output 'Done!'
 }
